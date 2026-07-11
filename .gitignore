@@ -1,0 +1,9 @@
+deal-signal-ai/
+backend/__pycache__/
+backend/uploads/
+*.pyc
+__pycache__/
+.env
+node_modules/
+.next/
+.DS_Store
