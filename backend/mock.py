@@ -1190,6 +1190,39 @@ for signal in SIGNALS:
     if signal.id in _SOURCE_QUALITY:
         signal.source_quality = _SOURCE_QUALITY[signal.id]
 
+
+# ── Source name/type consistency fixes ─────────────────────────────────
+
+_SOURCE_NAME_FIXES: dict[str, str] = {
+    "sig-001": "BIS Export Control Policy",
+    "sig-002": "Nvidia Investor Relations",
+    "sig-004": "Apple Newsroom",
+    "sig-005": "Apple Newsroom",
+    "sig-008": "Revolut Newsroom",
+    "sig-009": "Revolut Newsroom",
+    "sig-010": "Adyen Press Release",
+    "sig-013": "JPMorgan Chase Investor Relations",
+    "sig-015": "Salesforce Investor Relations",
+}
+
+_SOURCE_TYPE_FIXES: dict[str, str] = {
+    "sig-001": "regulator",
+    "sig-002": "company-press-release",
+    "sig-004": "company-press-release",
+    "sig-005": "company-press-release",
+    "sig-008": "company-press-release",
+    "sig-009": "company-press-release",
+    "sig-010": "company-press-release",
+    "sig-013": "company-filing",
+    "sig-015": "company-filing",
+}
+
+for signal in SIGNALS:
+    if signal.id in _SOURCE_NAME_FIXES:
+        signal.source_name = _SOURCE_NAME_FIXES[signal.id]
+    if signal.id in _SOURCE_TYPE_FIXES:
+        signal.source_type = _SOURCE_TYPE_FIXES[signal.id]
+
 # Fix outdated titles and source names to match historical dates
 _TITLE_FIXES: dict[str, str] = {
     "sig-003": "Nvidia Reports Record Data Center Revenue: $22.1B in Q4 FY2024",
