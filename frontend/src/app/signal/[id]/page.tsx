@@ -134,6 +134,11 @@ export default function SignalBriefPage() {
               {signal.source_name} <ExternalLink className="w-3 h-3" />
             </a>
           </div>
+          {signal.source_status === "demo_only" && signal.source_note && (
+            <p className="mt-3 text-xs text-zinc-600 italic max-w-2xl">
+              {signal.source_note}
+            </p>
+          )}
         </motion.div>
 
         {/* Executive Summary */}

@@ -70,6 +70,11 @@ export default function SignalCard({ signal, index = 0 }: { signal: Signal; inde
             </div>
             <ConfidenceBadge confidence={signal.confidence} />
           </div>
+          {signal.source_status === "demo_only" && (
+            <div className="mt-2 text-[0.6rem] text-zinc-600 italic">
+              Demo signal — source is illustrative
+            </div>
+          )}
         </div>
       </Link>
     </motion.div>

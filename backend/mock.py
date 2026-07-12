@@ -865,54 +865,129 @@ _SOURCE_TYPES: dict[str, str] = {
     "CrowdStrike Incident Blog + SEC 8-K Filing": "company-filing",
 }
 
+# Real base URLs per signal (verified company/regulator pages, not specific articles)
+_REAL_URLS: dict[str, str] = {
+    "sig-001": "https://investor.nvidia.com",
+    "sig-002": "https://investor.nvidia.com",
+    "sig-003": "https://investor.nvidia.com/financial-info/quarterly-results",
+    "sig-004": "https://ec.europa.eu/commission/presscorner",
+    "sig-005": "https://www.apple.com/newsroom",
+    "sig-006": "https://www.fca.org.uk/publications/consultation-papers",
+    "sig-007": "https://wise.com/gb/blog",
+    "sig-008": "https://www.bankofengland.co.uk/prudential-regulation",
+    "sig-009": "https://www.revolut.com/news",
+    "sig-010": "https://www.adyen.com/press-and-media",
+    "sig-011": "https://www.adyen.com/ir",
+    "sig-012": "https://www.federalreserve.gov/newsevents/pressreleases.htm",
+    "sig-013": "https://www.jpmorgan.com/insights",
+    "sig-014": "https://www.jpmorganchase.com/ir/financial-reporting",
+    "sig-015": "https://www.salesforce.com/news",
+    "sig-016": "https://investor.salesforce.com/financials",
+    "sig-017": "https://ir.crowdstrike.com",
+    "sig-018": "https://ir.crowdstrike.com",
+}
+
+_SOURCE_NOTES: dict[str, str] = {
+    "sig-001": "Link leads to Nvidia investor relations. Specific 2026 export control article is illustrative.",
+    "sig-002": "Link leads to Nvidia investor relations. Hyperscaler chip competition analysis is illustrative.",
+    "sig-003": "Link leads to Nvidia quarterly results page. FY2027 data is illustrative and includes analyst-estimated figures.",
+    "sig-004": "Link leads to European Commission press corner. DMA Phase 2 scenario is an illustrative regulatory analysis.",
+    "sig-005": "Link leads to Apple Newsroom. Consumer survey data cited is illustrative and not Apple-disclosed.",
+    "sig-006": "Link leads to FCA consultation papers. CP26-8 is an illustrative regulatory scenario.",
+    "sig-007": "Link leads to Wise blog. Market expansion and revenue mix data are illustrative.",
+    "sig-008": "Link leads to PRA homepage. Revolut banking licence scenario is illustrative.",
+    "sig-009": "Link leads to Revolut newsroom. Crypto revenue figures are illustrative estimates.",
+    "sig-010": "Link leads to Adyen press page. Amazon contract details are illustrative.",
+    "sig-011": "Link leads to Adyen investor relations. H1 2026 hiring data is illustrative.",
+    "sig-012": "Link leads to Federal Reserve press releases. Basel IV endgame scenario is an illustrative regulatory analysis.",
+    "sig-013": "Link leads to JPMorgan insights. AI trading desk data is illustrative.",
+    "sig-014": "Link leads to JPMorgan financial reporting. CRE provision figures are illustrative.",
+    "sig-015": "Link leads to Salesforce newsroom. Agentforce 2.0 launch details are illustrative.",
+    "sig-016": "Link leads to Salesforce investor relations. FY2027 earnings data is illustrative.",
+    "sig-017": "Link leads to CrowdStrike investor relations. FY2027 ARR milestone data is illustrative.",
+    "sig-018": "Link leads to CrowdStrike investor relations. Incident details are illustrative of a supply-chain scenario.",
+}
+
+# Confidence rationales per signal
 _CONFIDENCE_RATIONALES: dict[str, str] = {
-    "sig-001": "Government policy announcement with documented corporate impact via 8-K filing and analyst consensus revisions.",
-    "sig-002": "Multiple hyperscaler earnings calls corroborate in-house chip investment. Medium confidence reflects uncertainty about procurement reduction magnitude.",
-    "sig-003": "Official company earnings release. Highest confidence — numbers are audited and publicly filed.",
-    "sig-004": "Official EC regulatory action with published Statement of Objections. High confidence reflects formal legal process.",
-    "sig-005": "Consumer survey data with 4,200 respondents. Lower confidence reflects survey methodology limitations and Apple non-disclosure.",
-    "sig-006": "Official FCA consultation paper. Medium-high confidence reflects formal regulatory process, though final rules may differ.",
-    "sig-007": "Official company announcement via Wise's own blog. High confidence as company-disclosed data.",
-    "sig-008": "Official PRA regulatory action confirmed by BBC. Highest confidence — formal regulator announcement.",
-    "sig-009": "CNBC reporting corroborated by public crypto exchange volume data. Medium confidence reflects limited Revolut-specific disclosure.",
-    "sig-010": "Reuters reporting, not yet confirmed in Adyen shareholder filings. Medium-high pending formal confirmation.",
-    "sig-011": "Official company shareholder letter. High confidence as company-disclosed financial data.",
-    "sig-012": "Official Federal Reserve final rule publication. Highest confidence — formal regulatory action.",
-    "sig-013": "Niche financial publication (Risk.net) reporting. Medium confidence reflects limited corroborating sources.",
-    "sig-014": "Official 10-Q filing. High confidence as audited filed data, though provision estimates involve judgment.",
-    "sig-015": "Official company press release. Medium-high confidence — product launched but revenue impact unproven.",
+    "sig-001": "Government policy announcement with documented corporate impact via 8-K filing.",
+    "sig-002": "Multiple hyperscaler earnings calls corroborate in-house chip investment.",
+    "sig-003": "Official company earnings release. Highest confidence — audited and publicly filed.",
+    "sig-004": "Official EC regulatory action with published Statement of Objections.",
+    "sig-005": "Consumer survey data with 4,200 respondents. Lower confidence reflects survey methodology limitations.",
+    "sig-006": "Official FCA consultation paper. Medium-high confidence, though final rules may differ.",
+    "sig-007": "Official company announcement via Wise blog. High confidence as company-disclosed data.",
+    "sig-008": "Official PRA regulatory action confirmed by BBC. Highest confidence.",
+    "sig-009": "CNBC reporting corroborated by public crypto exchange volume data.",
+    "sig-010": "Reuters reporting, not yet confirmed in Adyen shareholder filings.",
+    "sig-011": "Official company shareholder letter. High confidence as company-disclosed data.",
+    "sig-012": "Official Federal Reserve final rule publication. Highest confidence.",
+    "sig-013": "Niche financial publication (Risk.net) reporting. Medium confidence.",
+    "sig-014": "Official 10-Q filing. High confidence as audited filed data.",
+    "sig-015": "Official company press release. Medium-high — product launched, revenue impact unproven.",
     "sig-016": "Official company earnings release. High confidence as filed financial data.",
     "sig-017": "Official company earnings release. High confidence as audited filed data.",
-    "sig-018": "Official SEC 8-K filing and company incident blog. Highest confidence — mandatory disclosure with legal liability.",
+    "sig-018": "Official SEC 8-K filing and company incident blog. Highest confidence.",
 }
 
+# What is unknown per signal
 _WHAT_IS_UNKNOWN: dict[str, str] = {
-    "sig-001": "Exact revenue exposure by geography is not publicly disclosed by Nvidia. Duration and final scope of export restrictions remain subject to political negotiation.",
-    "sig-002": "Actual procurement reduction by hyperscalers may differ from announced plans. In-house chip training performance vs. Nvidia remains an open question.",
-    "sig-003": "Whether growth deceleration is purely base effect or signals demand saturation. Forward guidance accuracy given geopolitical and supply chain uncertainty.",
-    "sig-004": "Final EC remedies not yet determined (typically 12-18 months). Apple may negotiate compliance terms. Consumer adoption of third-party stores under DMA Phase 1 has been limited.",
-    "sig-005": "Apple has not disclosed official AI feature usage metrics. Survey data may not be representative. Correlation between AI usage and upgrade intent is unproven.",
-    "sig-006": "Final FCA rules subject to consultation responses. Exact compliance cost for Wise is estimable but not confirmed.",
-    "sig-007": "Business account CAC in new markets not disclosed. Competitive responses from Airwallex, Payoneer, Revolut Business are unknown.",
-    "sig-008": "Full unrestricted banking licence timeline uncertain. Revolut pre-IPO disclosures have not yet provided granular deposit or lending data.",
-    "sig-009": "Revolut does not publicly disclose crypto revenue as separate line item. Whether Revolut plans to de-emphasize crypto products is unknown.",
-    "sig-010": "Adyen has not yet confirmed Amazon contract in shareholder communications. Contract duration, renewal structure, and exclusivity are unknown.",
-    "sig-011": "Long-term revenue return on engineering hiring investment is unproven. EBITDA margin recovery timeline is management guidance, not confirmed.",
-    "sig-012": "JPMorgan's preferred capital-building approach not publicly detailed. RWA optimization potential depends on regulatory interpretation.",
-    "sig-013": "Whether AI trading advantage extends beyond FX to rates/credit is unproven. Competitive durability unknown — other banks may replicate.",
-    "sig-014": "Loan-to-value distribution of CRE portfolio at current valuations not disclosed. Percentage of CRE loans maturing in 12-24 months is unknown.",
-    "sig-015": "Agentforce revenue not separately disclosed. Cannibalization of seat-based revenue vs. net new consumption revenue is unproven.",
-    "sig-016": "Split between deliberate seat optimization and competitive losses not disclosed. Whether Agentforce can re-accelerate blended growth is unproven.",
-    "sig-017": "Post-incident renewal cohorts not yet reported. Concentration of Falcon Flex adoption across modules unknown. New customer acquisition rates post-incident not disclosed.",
-    "sig-018": "Whether affected customers will churn unknown until renewal data. Insurance coverage for $180M cost undisclosed. Technical changes to update channel not publicly detailed.",
+    "sig-001": "Exact revenue exposure by geography is not publicly disclosed by Nvidia.",
+    "sig-002": "Actual procurement reduction by hyperscalers may differ from announced plans.",
+    "sig-003": "Whether growth deceleration is base effect or signals demand saturation.",
+    "sig-004": "Final EC remedies not yet determined (typically 12-18 months).",
+    "sig-005": "Apple has not disclosed official AI feature usage metrics.",
+    "sig-006": "Final FCA rules subject to consultation responses.",
+    "sig-007": "Business account CAC in new markets not disclosed.",
+    "sig-008": "Full unrestricted banking licence timeline uncertain.",
+    "sig-009": "Revolut does not publicly disclose crypto revenue as separate line item.",
+    "sig-010": "Adyen has not confirmed Amazon contract in shareholder communications.",
+    "sig-011": "Long-term revenue return on engineering hiring investment unproven.",
+    "sig-012": "JPMorgan preferred capital-building approach not publicly detailed.",
+    "sig-013": "Whether AI trading advantage extends beyond FX to rates/credit is unproven.",
+    "sig-014": "Loan-to-value distribution of CRE portfolio at current valuations not disclosed.",
+    "sig-015": "Agentforce revenue not separately disclosed.",
+    "sig-016": "Split between seat optimization and competitive losses not disclosed.",
+    "sig-017": "Post-incident renewal cohorts not yet reported.",
+    "sig-018": "Whether affected customers will churn unknown until renewal data.",
 }
 
+# Signal-specific evidence gaps (replaces generic template)
+_SPECIFIC_GAPS: dict[str, str] = {
+    "sig-001": "Management has not quantified data center revenue exposure to the specific restricted geographies.",
+    "sig-002": "Actual hyperscaler GPU procurement reduction has not been confirmed in any public filing.",
+    "sig-003": "Whether growth deceleration signals demand saturation or base-effect normalization is not established.",
+    "sig-004": "Final EC remedy scope and implementation timeline are not yet determined.",
+    "sig-005": "Apple has not disclosed official AI feature usage metrics; survey data may not be representative.",
+    "sig-006": "Final FCA rules are subject to consultation responses and may differ from the proposal.",
+    "sig-007": "Customer acquisition costs and competitive response in new markets are not publicly disclosed.",
+    "sig-008": "Timeline for unrestricted banking licence and specific lending products is not confirmed by the PRA.",
+    "sig-009": "Revolut does not separately disclose crypto trading revenue in public filings.",
+    "sig-010": "Adyen has not confirmed the Amazon contract in shareholder communications.",
+    "sig-011": "Revenue return on the engineering hiring investment has not been demonstrated in reported results.",
+    "sig-012": "JPMorgan's preferred approach to meeting Basel IV requirements has not been publicly detailed.",
+    "sig-013": "Whether AI trading advantage extends beyond FX to rates and credit has not been demonstrated.",
+    "sig-014": "Loan-to-value distribution of the CRE portfolio at current property valuations is not disclosed.",
+    "sig-015": "Agentforce consumption revenue is not separately disclosed; seat cannibalization effect is unmeasured.",
+    "sig-016": "The split between seat count optimization and competitive losses has not been disclosed.",
+    "sig-017": "Post-incident new customer acquisition and renewal rates have not yet been reported.",
+    "sig-018": "Customer churn impact of the incident has not been reported in subsequent filings.",
+}
+
+# Apply all enrichments
 for signal in SIGNALS:
     signal.source_type = _SOURCE_TYPES.get(signal.source_name, "demo-only")
     signal.confidence_rationale = _CONFIDENCE_RATIONALES.get(signal.id, "")
+    signal.source_status = "demo_only"
+    signal.source_note = _SOURCE_NOTES.get(signal.id, "Curated demo signal. Source link is illustrative.")
+    # Replace source URL with real base URL, keep original source_name
+    real_url = _REAL_URLS.get(signal.id)
+    if real_url:
+        signal.source_url = real_url
 
 for brief_id, brief in BRIEFS.items():
     brief.what_is_unknown = _WHAT_IS_UNKNOWN.get(brief_id, "")
+    gap = _SPECIFIC_GAPS.get(brief_id, "")
     for ma in brief.model_assumptions:
         if not ma.financial_area:
             if "revenue" in ma.assumption.lower() or "growth" in ma.assumption.lower():
@@ -926,8 +1001,8 @@ for brief_id, brief in BRIEFS.items():
             else:
                 ma.financial_area = "Income Statement"; ma.possible_direction = "uncertain"
         if not ma.confidence:
-            ma.confidence = ma.magnitude if ma.magnitude else "medium"
+            ma.confidence = ma.magnitude if hasattr(ma, 'magnitude') and ma.magnitude else "medium"
         if not ma.reasoning:
             ma.reasoning = f"Based on {brief_id} signal evidence"
-        if not ma.evidence_gap:
-            ma.evidence_gap = "No updated guidance or confirmed data from company"
+        if not ma.evidence_gap or ma.evidence_gap == "No updated guidance or confirmed data from company":
+            ma.evidence_gap = gap

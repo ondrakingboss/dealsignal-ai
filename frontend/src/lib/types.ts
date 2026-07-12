@@ -25,6 +25,8 @@ export interface Signal {
   source_name: string;
   source_url: string;
   source_type: string;
+  source_status: string;
+  source_note: string;
   summary: string;
   tags: string[];
 }
