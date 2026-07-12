@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowUpRight, ShieldCheck, FileText, Globe } from "lucide-react";
+import { ArrowUpRight, ShieldCheck, FileText, Globe, CheckCircle, AlertCircle, Search } from "lucide-react";
 import SeverityBadge, { CategoryBadge, ConfidenceBadge } from "./severity-badge";
 import type { Signal } from "@/lib/types";
 
@@ -21,24 +21,24 @@ const sourceLabels: Record<string, string> = {
   "demo-only": "Demo",
 };
 
-const sourceQualityLabels: Record<string, string> = {
-  "exact_document": "Verified source",
-  "relevant_page": "Relevant source",
-  "base_page": "Base source",
+const depthLabels: Record<string, { label: string; color: string }> = {
+  "exact_document": { label: "Exact", color: "text-green-400 bg-green-500/10 border-green-500/20" },
+  "relevant_page": { label: "Relevant", color: "text-blue-400 bg-blue-500/10 border-blue-500/20" },
+  "base_page": { label: "Base", color: "text-zinc-500 bg-zinc-500/10 border-zinc-500/20" },
 };
 
-function _sourceQualityLabel(signal: Signal): string {
-  if (signal.source_status === "demo_only") return "Demo";
-  if (signal.source_depth && sourceQualityLabels[signal.source_depth]) {
-    return sourceQualityLabels[signal.source_depth];
-  }
-  return "Source";
-}
+const qualityIcons: Record<string, React.ReactNode> = {
+  "strong": <CheckCircle className="w-2.5 h-2.5 text-green-400" />,
+  "acceptable": <AlertCircle className="w-2.5 h-2.5 text-blue-400" />,
+  "weak": <Search className="w-2.5 h-2.5 text-zinc-500" />,
+};
 
 export default function SignalCard({ signal, index = 0 }: { signal: Signal; index?: number }) {
   const catClass = `cat-${signal.category}`;
   const sourceIcon = sourceIcons[signal.source_type];
   const sourceLabel = sourceLabels[signal.source_type] || "Source";
+  const depth = depthLabels[signal.source_depth];
+  const qualityIcon = qualityIcons[signal.source_quality];
 
   return (
     <motion.div
@@ -84,20 +84,26 @@ export default function SignalCard({ signal, index = 0 }: { signal: Signal; inde
             </div>
             <ConfidenceBadge confidence={signal.confidence} />
           </div>
-          {signal.source_status !== "demo_only" && signal.source_depth && (
-            <div className="mt-2">
-              <span className="text-[0.6rem] text-green-400 bg-green-500/10 border border-green-500/20 rounded-full px-2 py-0.5">
-                {_sourceQualityLabel(signal)}
+
+          {/* Source quality indicator */}
+          <div className="mt-2 flex items-center gap-2">
+            {depth && (
+              <span className={`text-[0.6rem] rounded-full px-2 py-0.5 border ${depth.color}`}>
+                {depth.label}
               </span>
-            </div>
-          )}
-          {signal.source_status === "demo_only" && (
-            <div className="mt-2 text-[0.6rem] text-zinc-600 italic flex items-center gap-1">
-              <span>Demo</span>
-              <span className="text-zinc-700">—</span>
-              <span className="text-zinc-500">{_sourceQualityLabel(signal)}</span>
-            </div>
-          )}
+            )}
+            {qualityIcon && (
+              <span className="flex items-center gap-1 text-[0.6rem] text-zinc-500">
+                {qualityIcon}
+                {signal.source_quality}
+              </span>
+            )}
+            {signal.source_status === "demo_only" && (
+              <span className="text-[0.6rem] text-zinc-600 italic ml-auto">
+                {depth?.label || "Demo"} source
+              </span>
+            )}
+          </div>
         </div>
       </Link>
     </motion.div>

@@ -133,6 +133,9 @@ export default function SignalBriefPage() {
             >
               {signal.source_name} <ExternalLink className="w-3 h-3" />
             </a>
+            <span className="text-[0.6rem] text-zinc-600 bg-[#ffffff05] border border-[#27272a] rounded-full px-1.5 py-0.5">
+              {signal.source_depth === "exact_document" ? "Exact source" : signal.source_depth === "relevant_page" ? "Relevant source" : signal.source_depth === "base_page" ? "Base source" : ""}
+            </span>
           </div>
           {signal.source_status === "demo_only" && signal.source_note && (
             <p className="mt-3 text-xs text-zinc-600 italic max-w-2xl">
