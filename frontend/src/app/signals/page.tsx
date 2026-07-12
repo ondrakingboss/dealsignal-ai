@@ -54,6 +54,9 @@ export default function SignalsPage() {
             {data ? `${data.total} signals` : "Loading..."}{" "}
             across 8 companies. Filter by category and severity.
           </p>
+          <p className="text-xs text-zinc-600 mt-1">
+            Curated demo signals. Production should connect to live filings, press releases, and verified market data.
+          </p>
         </div>
 
         {/* Filters */}
