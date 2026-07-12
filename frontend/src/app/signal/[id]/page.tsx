@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { apiUrl } from "@/lib/api";
 import {
   ArrowLeft,
   ExternalLink,
@@ -44,7 +45,7 @@ export default function SignalBriefPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
-    fetch(`/api/brief/${id}`)
+    fetch(apiUrl(`/api/brief/${id}`))
       .then((r) => {
         if (!r.ok) throw new Error("Not found");
         return r.json();

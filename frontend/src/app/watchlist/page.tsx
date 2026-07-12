@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Radio, Search, Filter } from "lucide-react";
+import { apiUrl } from "@/lib/api";
 import CompanyCard from "@/components/company-card";
 import type { Company } from "@/lib/types";
 
@@ -10,7 +11,7 @@ export default function WatchlistPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/companies")
+    fetch(apiUrl("/api/companies"))
       .then((r) => r.json())
       .then((data) => {
         setCompanies(data);

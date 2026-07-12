@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { apiUrl } from "@/lib/api";
 import { motion } from "framer-motion";
 import {
   Building2,
@@ -23,7 +24,7 @@ export default function CompanyPage() {
   useEffect(() => {
     if (!ticker) return;
     setLoading(true);
-    fetch(`/api/company/${ticker}`)
+    fetch(apiUrl(`/api/company/${ticker}`))
       .then((r) => r.json())
       .then((d) => {
         setData(d);

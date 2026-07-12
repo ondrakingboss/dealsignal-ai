@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Radio, Filter } from "lucide-react";
+import { apiUrl } from "@/lib/api";
 import SignalCard from "@/components/signal-card";
 import type { Signal, SignalFeed } from "@/lib/types";
 
@@ -32,7 +33,7 @@ export default function SignalsPage() {
     if (category !== "all") params.set("category", category);
     if (severity !== "all") params.set("severity", severity);
 
-    fetch(`/api/signals?${params.toString()}`)
+    fetch(apiUrl(`/api/signals?${params.toString()}`))
       .then((r) => r.json())
       .then((d) => {
         setData(d);
