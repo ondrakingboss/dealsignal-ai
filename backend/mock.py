@@ -1105,6 +1105,81 @@ for signal in SIGNALS:
     if signal.id in _VERIFIED_NOTES:
         signal.source_note = _VERIFIED_NOTES[signal.id]
 
+
+# ── Deep-link URL upgrades + source quality ────────────────────────────
+
+_DEEP_URLS: dict[str, str] = {
+    "sig-001": "https://www.bis.gov/policies/national-security/export-controls",
+    "sig-002": "https://investor.nvidia.com",
+    "sig-003": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-fourth-quarter-and-fiscal-2024",
+    "sig-004": "https://www.apple.com/newsroom/2024/01/apple-announces-changes-to-ios-safari-and-the-app-store-in-the-european-union/",
+    "sig-005": "https://www.apple.com/newsroom/2024/02/apple-reports-first-quarter-results/",
+    "sig-006": "https://www.fca.org.uk/publications/consultation-papers",
+    "sig-007": "https://wise.com",
+    "sig-008": "https://www.revolut.com/news",
+    "sig-009": "https://www.revolut.com/news",
+    "sig-010": "https://www.adyen.com/press-and-media",
+    "sig-011": "https://www.adyen.com/press-and-media",
+    "sig-012": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20240626a.htm",
+    "sig-013": "https://www.jpmorganchase.com/ir/quarterly-earnings",
+    "sig-014": "https://www.jpmorganchase.com/ir/quarterly-earnings",
+    "sig-015": "https://investor.salesforce.com",
+    "sig-016": "https://investor.salesforce.com",
+    "sig-017": "https://ir.crowdstrike.com",
+    "sig-018": "https://www.crowdstrike.com/blog/statement-on-windows-sensor-update/",
+}
+
+_SOURCE_DEPTH: dict[str, str] = {
+    "sig-001": "relevant_page",   # BIS export controls policy page
+    "sig-002": "base_page",       # Nvidia IR — multi-source synthesis
+    "sig-003": "exact_document",  # Nvidia FY2024 earnings press release
+    "sig-004": "exact_document",  # Apple DMA compliance press release
+    "sig-005": "exact_document",  # Apple Q1 FY2024 earnings press release
+    "sig-006": "relevant_page",   # FCA consultation papers index
+    "sig-007": "base_page",       # Wise.com — no specific IR subdomain found
+    "sig-008": "relevant_page",   # Revolut newsroom
+    "sig-009": "relevant_page",   # Revolut newsroom
+    "sig-010": "relevant_page",   # Adyen press and media page
+    "sig-011": "relevant_page",   # Adyen press and media page
+    "sig-012": "exact_document",  # Federal Reserve stress test press release
+    "sig-013": "relevant_page",   # JPM quarterly earnings index
+    "sig-014": "relevant_page",   # JPM quarterly earnings index
+    "sig-015": "relevant_page",   # Salesforce IR
+    "sig-016": "relevant_page",   # Salesforce IR
+    "sig-017": "relevant_page",   # CrowdStrike IR
+    "sig-018": "exact_document",  # CrowdStrike outage statement blog post
+}
+
+_SOURCE_QUALITY: dict[str, str] = {
+    "sig-001": "weak",           # BIS policy page is general, not event-specific
+    "sig-002": "weak",            # multi-source synthesis, no single page
+    "sig-003": "strong",          # Confirmed 200 OK press release
+    "sig-004": "strong",          # Confirmed 200 OK press release
+    "sig-005": "strong",          # Apple earnings press release
+    "sig-006": "acceptable",      # FCA consultation index — specific CP is illustrative
+    "sig-007": "weak",            # Wise base page — no specific annual report link found
+    "sig-008": "acceptable",      # Revolut newsroom — Cloudflare blocks curl but page exists
+    "sig-009": "acceptable",      # Revolut newsroom — same
+    "sig-010": "strong",          # Adyen press page confirmed 200 OK
+    "sig-011": "strong",          # Adyen press page confirmed 200 OK
+    "sig-012": "strong",          # Confirmed 200 OK Fed press release
+    "sig-013": "strong",          # JPM quarterly earnings confirmed 200 OK
+    "sig-014": "strong",          # JPM quarterly earnings confirmed 200 OK
+    "sig-015": "acceptable",      # Salesforce IR — WAF blocks curl but page exists
+    "sig-016": "acceptable",      # Salesforce IR — same
+    "sig-017": "acceptable",      # CrowdStrike IR — WAF blocks curl but page exists
+    "sig-018": "strong",          # Confirmed 301 redirect to blog post
+}
+
+# Apply deep links and quality
+for signal in SIGNALS:
+    if signal.id in _DEEP_URLS:
+        signal.source_url = _DEEP_URLS[signal.id]
+    if signal.id in _SOURCE_DEPTH:
+        signal.source_depth = _SOURCE_DEPTH[signal.id]
+    if signal.id in _SOURCE_QUALITY:
+        signal.source_quality = _SOURCE_QUALITY[signal.id]
+
 # Fix outdated titles and source names to match historical dates
 _TITLE_FIXES: dict[str, str] = {
     "sig-003": "Nvidia Reports Record Data Center Revenue: $22.1B in Q4 FY2024",

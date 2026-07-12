@@ -75,6 +75,8 @@ class Signal(BaseModel):
     source_type: SourceType = "demo-only"
     source_status: str = "demo_only"  # "verified" | "demo_only" | "unavailable"
     source_note: str = ""
+    source_depth: str = "base_page"  # "exact_document" | "relevant_page" | "base_page"
+    source_quality: str = "acceptable"  # "strong" | "acceptable" | "weak"
     summary: str
     tags: list[str] = []
 
