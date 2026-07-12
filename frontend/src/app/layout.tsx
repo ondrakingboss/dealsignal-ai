@@ -19,9 +19,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} dark h-full`}>
-      <body className="min-h-full bg-[#09090b] text-[#fafafa] antialiased flex">
+      <body className="min-h-full bg-[#09090b] text-[#fafafa] antialiased">
         <Sidebar />
-        <main className="flex-1 ml-56 min-h-screen">{children}</main>
+        <main className="min-h-screen lg:ml-56">{children}</main>
       </body>
     </html>
   );
