@@ -1006,6 +1006,16 @@ for brief_id, brief in BRIEFS.items():
             ma.reasoning = f"Based on {brief_id} signal evidence"
         if not ma.evidence_gap or ma.evidence_gap == "No updated guidance or confirmed data from company":
             ma.evidence_gap = gap
+        # Apply timing based on signal and assumption context
+        if not getattr(ma, 'timing', None):
+            if "growth" in ma.assumption.lower() or "margin" in ma.assumption.lower():
+                ma.timing = "next_quarter"
+            elif "capital" in ma.assumption.lower() or "buyback" in ma.assumption.lower():
+                ma.timing = "next_fiscal_year"
+            elif "regulation" in gap.lower() or "regulatory" in gap.lower():
+                ma.timing = "next_fiscal_year"
+            else:
+                ma.timing = "next_quarter"
 
 # ── Historical backdate + source verification ──────────────────────────
 

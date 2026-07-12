@@ -43,6 +43,7 @@ class FinancialArea(BaseModel):
 # ── Model Assumption ───────────────────────────────────────────────────
 
 class ModelAssumption(BaseModel):
+    model_config = {"extra": "allow"}
     assumption: str
     financial_area: str = ""  # "Income Statement" | "Balance Sheet" | "Cash Flow" | "Valuation"
     possible_direction: str = ""  # "up" | "down" | "uncertain"

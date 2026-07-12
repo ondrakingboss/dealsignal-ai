@@ -50,6 +50,7 @@ export interface ModelAssumption {
   assumption: string;
   financial_area: string;
   possible_direction: string;
+  timing: string;
   confidence: string;
   reasoning: string;
   evidence_gap: string;
