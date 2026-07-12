@@ -4,7 +4,6 @@ DealSignal AI — Pydantic Models
 
 from __future__ import annotations
 
-from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
@@ -13,7 +12,8 @@ from pydantic import BaseModel, Field
 # ── Enums as string literals ──────────────────────────────────────────
 
 Severity = str  # "low" | "medium" | "high"
-EventCategory = str  # "revenue" | "margin" | "balance-sheet" | "regulation" | "competition" | "management" | "macro" | "ma" | "sentiment"
+EventCategory = str
+SourceType = str  # "company-filing" | "company-press-release" | "regulator" | "financial-news" | "niche-financial" | "demo-only"
 
 
 # ── Company ────────────────────────────────────────────────────────────
@@ -28,14 +28,14 @@ class Company(BaseModel):
     founded: Optional[int] = None
     headquarters: str = ""
     employees: Optional[int] = None
-    market_cap: str = ""  # e.g. "$3.2T"
+    market_cap: str = ""
     signal_count: int = 0
 
 
 # ── Financial Area ─────────────────────────────────────────────────────
 
 class FinancialArea(BaseModel):
-    area: str  # e.g. "Revenue", "EBITDA Margin", "Operating Expenses"
+    area: str
     impact: str  # "positive" | "negative" | "neutral" | "uncertain"
     detail: str
 
@@ -43,16 +43,19 @@ class FinancialArea(BaseModel):
 # ── Model Assumption ───────────────────────────────────────────────────
 
 class ModelAssumption(BaseModel):
-    assumption: str  # e.g. "Revenue take-rate assumed at 2.9%"
-    change: str  # e.g. "Take-rate may compress to 2.4% under new regulation"
-    magnitude: str  # "minor" | "moderate" | "significant"
+    assumption: str
+    financial_area: str = ""  # "Income Statement" | "Balance Sheet" | "Cash Flow" | "Valuation"
+    possible_direction: str = ""  # "up" | "down" | "uncertain"
+    confidence: str = "medium"  # "low" | "medium" | "high"
+    reasoning: str = ""
+    evidence_gap: str = ""
 
 
 # ── Analyst Question ───────────────────────────────────────────────────
 
 class AnalystQuestion(BaseModel):
     question: str
-    urgency: str = "medium"  # "low" | "medium" | "high"
+    urgency: str = "medium"
 
 
 # ── Signal / Event ─────────────────────────────────────────────────────
@@ -62,12 +65,14 @@ class Signal(BaseModel):
     ticker: str
     company_name: str
     title: str
-    event_date: str  # ISO date
+    event_date: str
     category: EventCategory
     severity: Severity
-    confidence: float  # 0.0–1.0
+    confidence: float
+    confidence_rationale: str = ""
     source_name: str
     source_url: str
+    source_type: SourceType = "demo-only"
     summary: str
     tags: list[str] = []
 
@@ -82,6 +87,7 @@ class AnalystBrief(BaseModel):
     financial_areas: list[FinancialArea]
     model_assumptions: list[ModelAssumption]
     evidence: str
+    what_is_unknown: str = ""
     next_steps: list[str]
     analyst_questions: list[AnalystQuestion]
 

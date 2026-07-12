@@ -21,8 +21,10 @@ export interface Signal {
   category: string;
   severity: "low" | "medium" | "high";
   confidence: number;
+  confidence_rationale: string;
   source_name: string;
   source_url: string;
+  source_type: string;
   summary: string;
   tags: string[];
 }
@@ -42,8 +44,11 @@ export interface FinancialArea {
 
 export interface ModelAssumption {
   assumption: string;
-  change: string;
-  magnitude: string;
+  financial_area: string;
+  possible_direction: string;
+  confidence: string;
+  reasoning: string;
+  evidence_gap: string;
 }
 
 export interface AnalystQuestion {
@@ -59,6 +64,7 @@ export interface AnalystBrief {
   financial_areas: FinancialArea[];
   model_assumptions: ModelAssumption[];
   evidence: string;
+  what_is_unknown: string;
   next_steps: string[];
   analyst_questions: AnalystQuestion[];
 }

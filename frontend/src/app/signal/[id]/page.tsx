@@ -173,6 +173,56 @@ export default function SignalBriefPage() {
           </div>
         </motion.div>
 
+        {/* Why This Signal */}
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.18 }}
+          className="mb-6"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Target className="w-4 h-4 text-green-400" />
+            <h2 className="text-sm font-semibold text-zinc-200">Why This Signal?</h2>
+          </div>
+          <div className="glass-card p-5 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h3 className="text-xs font-semibold text-zinc-400 mb-1">Trigger</h3>
+                <p className="text-xs text-zinc-300">{brief.what_happened}</p>
+              </div>
+              <div>
+                <h3 className="text-xs font-semibold text-zinc-400 mb-1">Financial Relevance</h3>
+                <p className="text-xs text-zinc-300">{brief.why_it_matters}</p>
+              </div>
+            </div>
+            {signal.confidence_rationale && (
+              <div>
+                <h3 className="text-xs font-semibold text-zinc-400 mb-1">Confidence Rationale</h3>
+                <p className="text-xs text-zinc-500">{signal.confidence_rationale}</p>
+              </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {brief.what_is_unknown && (
+                <div>
+                  <h3 className="text-xs font-semibold text-yellow-400 mb-1">What Is Unknown</h3>
+                  <p className="text-xs text-zinc-500 leading-relaxed">{brief.what_is_unknown}</p>
+                </div>
+              )}
+              <div>
+                <h3 className="text-xs font-semibold text-blue-400 mb-1">Suggested Follow-Up</h3>
+                <ul className="space-y-1">
+                  {brief.analyst_questions.slice(0, 3).map((q, i) => (
+                    <li key={i} className="flex items-start gap-2 text-xs text-zinc-500">
+                      <span className="text-blue-400 mt-0.5">▸</span>
+                      {q.question}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
         {/* Financial Areas Affected */}
         <motion.section
           initial={{ opacity: 0, y: 8 }}
@@ -223,34 +273,48 @@ export default function SignalBriefPage() {
             <Target className="w-4 h-4 text-green-400" />
             <h2 className="text-sm font-semibold text-zinc-200">Model Impact Mapping</h2>
           </div>
-          <div className="space-y-3">
-            {brief.model_assumptions.map((assumption, i) => (
-              <div key={i} className="glass-card p-4">
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <div className="flex-1">
-                    <h3 className="text-xs font-medium text-zinc-300 mb-1">
-                      Current assumption:
-                    </h3>
-                    <p className="text-xs text-zinc-500 font-mono bg-[#ffffff05] rounded px-2 py-1">
-                      {assumption.assumption}
-                    </p>
-                  </div>
-                  <span
-                    className={`text-[0.6rem] font-bold uppercase px-2 py-0.5 rounded border ${magnitudeColors[assumption.magnitude] || magnitudeColors.minor}`}
-                  >
-                    {assumption.magnitude}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-xs font-medium text-green-400 mb-1">
-                    Revised estimate:
-                  </h3>
-                  <p className="text-xs text-zinc-400 font-mono bg-[#22c55e05] rounded px-2 py-1 border border-green-500/10">
-                    {assumption.change}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-[#27272a] text-left">
+                  <th className="p-2 font-semibold text-zinc-400">Assumption</th>
+                  <th className="p-2 font-semibold text-zinc-400">Area</th>
+                  <th className="p-2 font-semibold text-zinc-400">Direction</th>
+                  <th className="p-2 font-semibold text-zinc-400">Conf.</th>
+                  <th className="p-2 font-semibold text-zinc-400">Evidence Gap</th>
+                </tr>
+              </thead>
+              <tbody>
+                {brief.model_assumptions.map((a, i) => (
+                  <tr key={i} className="border-b border-[#27272a]/50 hover:bg-[#ffffff03]">
+                    <td className="p-2 text-zinc-300 max-w-[200px] truncate" title={a.assumption}>
+                      {a.assumption}
+                    </td>
+                    <td className="p-2 text-zinc-500">{a.financial_area || "—"}</td>
+                    <td className="p-2">
+                      <span className={`text-[0.6rem] font-bold uppercase px-1.5 py-0.5 rounded ${
+                        a.possible_direction === "down" ? "text-red-400 bg-red-500/10" :
+                        a.possible_direction === "up" ? "text-green-400 bg-green-500/10" :
+                        "text-zinc-400 bg-zinc-500/10"
+                      }`}>
+                        {a.possible_direction || "—"}
+                      </span>
+                    </td>
+                    <td className="p-2">
+                      <span className={`text-[0.6rem] font-medium ${
+                        a.confidence === "high" ? "text-green-400" :
+                        a.confidence === "medium" ? "text-yellow-400" : "text-zinc-500"
+                      }`}>
+                        {a.confidence || "—"}
+                      </span>
+                    </td>
+                    <td className="p-2 text-zinc-600 max-w-[200px] truncate" title={a.evidence_gap}>
+                      {a.evidence_gap || "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </motion.section>
 

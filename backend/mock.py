@@ -843,3 +843,91 @@ BRIEFS: dict[str, AnalystBrief] = {
         ],
     ),
 }
+
+# ── Post-processing enrichment ─────────────────────────────────────────
+_SOURCE_TYPES: dict[str, str] = {
+    "Reuters": "financial-news",
+    "The Information": "financial-news",
+    "Nvidia Investor Relations": "company-press-release",
+    "Financial Times": "financial-news",
+    "Bloomberg": "financial-news",
+    "FCA Consultation Paper": "regulator",
+    "Wise Blog": "company-press-release",
+    "BBC News": "financial-news",
+    "CNBC": "financial-news",
+    "Adyen H1 2026 Letter to Shareholders": "company-press-release",
+    "Federal Reserve Press Release": "regulator",
+    "Risk.net": "niche-financial",
+    "JPMorgan 10-Q Filing": "company-filing",
+    "Salesforce Press Release": "company-press-release",
+    "Salesforce Q1 FY2027 Earnings": "company-filing",
+    "CrowdStrike Q1 FY2027 Results": "company-filing",
+    "CrowdStrike Incident Blog + SEC 8-K Filing": "company-filing",
+}
+
+_CONFIDENCE_RATIONALES: dict[str, str] = {
+    "sig-001": "Government policy announcement with documented corporate impact via 8-K filing and analyst consensus revisions.",
+    "sig-002": "Multiple hyperscaler earnings calls corroborate in-house chip investment. Medium confidence reflects uncertainty about procurement reduction magnitude.",
+    "sig-003": "Official company earnings release. Highest confidence — numbers are audited and publicly filed.",
+    "sig-004": "Official EC regulatory action with published Statement of Objections. High confidence reflects formal legal process.",
+    "sig-005": "Consumer survey data with 4,200 respondents. Lower confidence reflects survey methodology limitations and Apple non-disclosure.",
+    "sig-006": "Official FCA consultation paper. Medium-high confidence reflects formal regulatory process, though final rules may differ.",
+    "sig-007": "Official company announcement via Wise's own blog. High confidence as company-disclosed data.",
+    "sig-008": "Official PRA regulatory action confirmed by BBC. Highest confidence — formal regulator announcement.",
+    "sig-009": "CNBC reporting corroborated by public crypto exchange volume data. Medium confidence reflects limited Revolut-specific disclosure.",
+    "sig-010": "Reuters reporting, not yet confirmed in Adyen shareholder filings. Medium-high pending formal confirmation.",
+    "sig-011": "Official company shareholder letter. High confidence as company-disclosed financial data.",
+    "sig-012": "Official Federal Reserve final rule publication. Highest confidence — formal regulatory action.",
+    "sig-013": "Niche financial publication (Risk.net) reporting. Medium confidence reflects limited corroborating sources.",
+    "sig-014": "Official 10-Q filing. High confidence as audited filed data, though provision estimates involve judgment.",
+    "sig-015": "Official company press release. Medium-high confidence — product launched but revenue impact unproven.",
+    "sig-016": "Official company earnings release. High confidence as filed financial data.",
+    "sig-017": "Official company earnings release. High confidence as audited filed data.",
+    "sig-018": "Official SEC 8-K filing and company incident blog. Highest confidence — mandatory disclosure with legal liability.",
+}
+
+_WHAT_IS_UNKNOWN: dict[str, str] = {
+    "sig-001": "Exact revenue exposure by geography is not publicly disclosed by Nvidia. Duration and final scope of export restrictions remain subject to political negotiation.",
+    "sig-002": "Actual procurement reduction by hyperscalers may differ from announced plans. In-house chip training performance vs. Nvidia remains an open question.",
+    "sig-003": "Whether growth deceleration is purely base effect or signals demand saturation. Forward guidance accuracy given geopolitical and supply chain uncertainty.",
+    "sig-004": "Final EC remedies not yet determined (typically 12-18 months). Apple may negotiate compliance terms. Consumer adoption of third-party stores under DMA Phase 1 has been limited.",
+    "sig-005": "Apple has not disclosed official AI feature usage metrics. Survey data may not be representative. Correlation between AI usage and upgrade intent is unproven.",
+    "sig-006": "Final FCA rules subject to consultation responses. Exact compliance cost for Wise is estimable but not confirmed.",
+    "sig-007": "Business account CAC in new markets not disclosed. Competitive responses from Airwallex, Payoneer, Revolut Business are unknown.",
+    "sig-008": "Full unrestricted banking licence timeline uncertain. Revolut pre-IPO disclosures have not yet provided granular deposit or lending data.",
+    "sig-009": "Revolut does not publicly disclose crypto revenue as separate line item. Whether Revolut plans to de-emphasize crypto products is unknown.",
+    "sig-010": "Adyen has not yet confirmed Amazon contract in shareholder communications. Contract duration, renewal structure, and exclusivity are unknown.",
+    "sig-011": "Long-term revenue return on engineering hiring investment is unproven. EBITDA margin recovery timeline is management guidance, not confirmed.",
+    "sig-012": "JPMorgan's preferred capital-building approach not publicly detailed. RWA optimization potential depends on regulatory interpretation.",
+    "sig-013": "Whether AI trading advantage extends beyond FX to rates/credit is unproven. Competitive durability unknown — other banks may replicate.",
+    "sig-014": "Loan-to-value distribution of CRE portfolio at current valuations not disclosed. Percentage of CRE loans maturing in 12-24 months is unknown.",
+    "sig-015": "Agentforce revenue not separately disclosed. Cannibalization of seat-based revenue vs. net new consumption revenue is unproven.",
+    "sig-016": "Split between deliberate seat optimization and competitive losses not disclosed. Whether Agentforce can re-accelerate blended growth is unproven.",
+    "sig-017": "Post-incident renewal cohorts not yet reported. Concentration of Falcon Flex adoption across modules unknown. New customer acquisition rates post-incident not disclosed.",
+    "sig-018": "Whether affected customers will churn unknown until renewal data. Insurance coverage for $180M cost undisclosed. Technical changes to update channel not publicly detailed.",
+}
+
+for signal in SIGNALS:
+    signal.source_type = _SOURCE_TYPES.get(signal.source_name, "demo-only")
+    signal.confidence_rationale = _CONFIDENCE_RATIONALES.get(signal.id, "")
+
+for brief_id, brief in BRIEFS.items():
+    brief.what_is_unknown = _WHAT_IS_UNKNOWN.get(brief_id, "")
+    for ma in brief.model_assumptions:
+        if not ma.financial_area:
+            if "revenue" in ma.assumption.lower() or "growth" in ma.assumption.lower():
+                ma.financial_area = "Income Statement"; ma.possible_direction = "down"
+            elif "margin" in ma.assumption.lower():
+                ma.financial_area = "Income Statement"; ma.possible_direction = "down"
+            elif "buyback" in ma.assumption.lower() or "capital" in ma.assumption.lower():
+                ma.financial_area = "Balance Sheet"; ma.possible_direction = "down"
+            elif "pricing" in ma.assumption.lower() or "asp" in ma.assumption.lower():
+                ma.financial_area = "Income Statement"; ma.possible_direction = "down"
+            else:
+                ma.financial_area = "Income Statement"; ma.possible_direction = "uncertain"
+        if not ma.confidence:
+            ma.confidence = ma.magnitude if ma.magnitude else "medium"
+        if not ma.reasoning:
+            ma.reasoning = f"Based on {brief_id} signal evidence"
+        if not ma.evidence_gap:
+            ma.evidence_gap = "No updated guidance or confirmed data from company"
