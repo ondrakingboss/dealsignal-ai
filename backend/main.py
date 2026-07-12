@@ -42,6 +42,7 @@ def list_companies():
 # ── Company Detail ─────────────────────────────────────────────────────
 
 @app.get("/api/company/{ticker}")
+@app.get("/api/companies/{ticker}")
 def get_company(ticker: str):
     ticker_upper = ticker.upper()
     company = next((c for c in COMPANIES if c.ticker == ticker_upper), None)
@@ -135,6 +136,34 @@ def get_brief(signal_id: str):
     if not brief:
         raise HTTPException(status_code=404, detail="Brief not found")
     return brief.model_dump()
+
+
+# ── Categories ──────────────────────────────────────────────────────────
+
+@app.get("/api/categories")
+def get_categories():
+    """Return all unique signal categories with counts."""
+    from collections import Counter
+    cat_counts = Counter(s.category for s in SIGNALS)
+    return [
+        {"category": cat, "label": _cat_label(cat), "count": count}
+        for cat, count in cat_counts.most_common()
+    ]
+
+
+def _cat_label(cat: str) -> str:
+    labels = {
+        "revenue": "Revenue",
+        "margin": "Margin",
+        "balance-sheet": "Balance Sheet",
+        "regulation": "Regulation",
+        "competition": "Competition",
+        "management": "Management",
+        "macro": "Macro",
+        "ma": "M&A",
+        "sentiment": "Sentiment",
+    }
+    return labels.get(cat, cat.title())
 
 
 # ── Run ────────────────────────────────────────────────────────────────

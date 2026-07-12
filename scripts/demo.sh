@@ -7,7 +7,7 @@ set -e
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m'
-API="http://localhost:8000"
+API="http://localhost:8001"
 
 echo -e "${GREEN}DealSignal AI — Demo${NC}"
 echo "=============================="
