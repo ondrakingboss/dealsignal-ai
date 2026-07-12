@@ -4,13 +4,48 @@ DealSignal AI — FastAPI Backend
 
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException
+import time
+from collections import defaultdict
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from mock import BRIEFS, COMPANIES, SIGNALS
 from models import CompanyDetail, HealthCheck, SignalFeed
 
 app = FastAPI(title="DealSignal AI", version="1.0.0")
+
+# ── In-memory rate limiter (resets on restart, single-instance only) ───
+
+_RATE_LIMITS: dict[str, list[float]] = defaultdict(list)
+_RATE_WINDOW = 60
+_GET_LIMIT = 60
+
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    client_ip = request.client.host if request.client else "unknown"
+    now = time.time()
+    _RATE_LIMITS[client_ip] = [t for t in _RATE_LIMITS[client_ip] if now - t < _RATE_WINDOW]
+    if len(_RATE_LIMITS[client_ip]) >= _GET_LIMIT:
+        return JSONResponse(status_code=429, content={"detail": "Too many requests. Please wait before retrying."})
+    _RATE_LIMITS[client_ip].append(now)
+    return await call_next(request)
+
+
+# ── Security headers ────────────────────────────────────────────────────
+
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
+
+# ── CORS ────────────────────────────────────────────────────────────────
 
 app.add_middleware(
     CORSMiddleware,
