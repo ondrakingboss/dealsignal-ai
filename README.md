@@ -9,6 +9,9 @@ DealSignal identifies business events, classifies their financial impact, and ex
 
 ## Demo
 
+**Live:** [DealSignal AI](https://frontend-theta-eight-56khhtyd5b.vercel.app)  
+**Backend API:** https://dealsignal-ai.onrender.com
+
 Live demo — no API keys or signup required. Curated events for 8 companies across tech and financial services.
 
 | Company | Ticker | Signals |
