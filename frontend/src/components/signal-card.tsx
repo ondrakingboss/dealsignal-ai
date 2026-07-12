@@ -21,6 +21,20 @@ const sourceLabels: Record<string, string> = {
   "demo-only": "Demo",
 };
 
+const sourceQualityLabels: Record<string, string> = {
+  "exact_document": "Verified source",
+  "relevant_page": "Relevant source",
+  "base_page": "Base source",
+};
+
+function _sourceQualityLabel(signal: Signal): string {
+  if (signal.source_status === "demo_only") return "Demo";
+  if (signal.source_depth && sourceQualityLabels[signal.source_depth]) {
+    return sourceQualityLabels[signal.source_depth];
+  }
+  return "Source";
+}
+
 export default function SignalCard({ signal, index = 0 }: { signal: Signal; index?: number }) {
   const catClass = `cat-${signal.category}`;
   const sourceIcon = sourceIcons[signal.source_type];
@@ -70,9 +84,18 @@ export default function SignalCard({ signal, index = 0 }: { signal: Signal; inde
             </div>
             <ConfidenceBadge confidence={signal.confidence} />
           </div>
+          {signal.source_status !== "demo_only" && signal.source_depth && (
+            <div className="mt-2">
+              <span className="text-[0.6rem] text-green-400 bg-green-500/10 border border-green-500/20 rounded-full px-2 py-0.5">
+                {_sourceQualityLabel(signal)}
+              </span>
+            </div>
+          )}
           {signal.source_status === "demo_only" && (
-            <div className="mt-2 text-[0.6rem] text-zinc-600 italic">
-              Demo signal — source is illustrative
+            <div className="mt-2 text-[0.6rem] text-zinc-600 italic flex items-center gap-1">
+              <span>Demo</span>
+              <span className="text-zinc-700">—</span>
+              <span className="text-zinc-500">{_sourceQualityLabel(signal)}</span>
             </div>
           )}
         </div>
