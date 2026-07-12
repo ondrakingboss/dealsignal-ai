@@ -1104,3 +1104,22 @@ for signal in SIGNALS:
         signal.source_status = _VERIFIED_STATUS[signal.id]
     if signal.id in _VERIFIED_NOTES:
         signal.source_note = _VERIFIED_NOTES[signal.id]
+
+# Fix outdated titles and source names to match historical dates
+_TITLE_FIXES: dict[str, str] = {
+    "sig-003": "Nvidia Reports Record Data Center Revenue: $22.1B in Q4 FY2024",
+    "sig-017": "CrowdStrike ARR Surpasses $4B; Assesses July 2024 Outage Impact",
+}
+
+_SOURCE_NAME_FIXES: dict[str, str] = {
+    "sig-003": "Nvidia Q4 FY2024 Earnings Release",
+    "sig-011": "Adyen H1 2024 Letter to Shareholders",
+    "sig-016": "Salesforce Q4 FY2024 Earnings / 8-K Filing",
+    "sig-017": "CrowdStrike Q2 FY2025 Results",
+}
+
+for signal in SIGNALS:
+    if signal.id in _TITLE_FIXES:
+        signal.title = _TITLE_FIXES[signal.id]
+    if signal.id in _SOURCE_NAME_FIXES:
+        signal.source_name = _SOURCE_NAME_FIXES[signal.id]
