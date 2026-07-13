@@ -78,6 +78,7 @@ class Signal(BaseModel):
     source_note: str = ""
     source_depth: str = "base_page"  # "exact_document" | "relevant_page" | "base_page"
     source_quality: str = "acceptable"  # "strong" | "acceptable" | "weak"
+    evidence_class: str = "demo_only"  # "historical_verified" | "analyst_estimate" | "synthetic_scenario" | "demo_only" | "mixed_evidence"
     summary: str
     tags: list[str] = []
 

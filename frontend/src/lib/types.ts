@@ -29,6 +29,7 @@ export interface Signal {
   source_note: string;
   source_depth: string;
   source_quality: string;
+  evidence_class: string;
   summary: string;
   tags: string[];
 }

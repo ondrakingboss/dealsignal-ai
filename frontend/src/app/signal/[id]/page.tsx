@@ -405,6 +405,20 @@ export default function SignalBriefPage() {
             ))}
           </div>
         </motion.section>
+
+        {/* Disclaimer */}
+        <motion.section
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="border-t border-[#27272a] pt-6 mt-6"
+        >
+          <p className="text-xs text-zinc-600 italic leading-relaxed">
+            DealSignal is a curated demonstration of analyst event-intelligence
+            workflows. Historical facts are separated from analyst estimates and
+            scenario assumptions. This is not investment advice.
+          </p>
+        </motion.section>
       </div>
     </div>
   );

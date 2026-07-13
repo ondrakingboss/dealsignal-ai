@@ -1241,3 +1241,65 @@ for signal in SIGNALS:
         signal.title = _TITLE_FIXES[signal.id]
     if signal.id in _SOURCE_NAME_FIXES:
         signal.source_name = _SOURCE_NAME_FIXES[signal.id]
+
+# ── Evidence classification ────────────────────────────────────────────
+
+_EVIDENCE_CLASS: dict[str, str] = {
+    "sig-001": "mixed_evidence",     # Real BIS controls + analyst DC estimates
+    "sig-002": "analyst_estimate",    # Hyperscaler procurement from earnings call synthesis
+    "sig-003": "historical_verified", # Real FY2024 earnings, clean
+    "sig-004": "historical_verified", # Real EU DMA + Apple compliance announcement
+    "sig-005": "historical_verified", # Real Apple FY2024 earnings
+    "sig-006": "synthetic_scenario",  # Specific CP number is illustrative
+    "sig-007": "mixed_evidence",      # Real expansion + estimated segment metrics
+    "sig-008": "historical_verified", # Real PRA banking licence
+    "sig-009": "mixed_evidence",      # Real crypto decline + estimated revenue %s
+    "sig-010": "analyst_estimate",    # Reuters report, unconfirmed contract
+    "sig-011": "historical_verified", # Real Adyen H1 2024 shareholder letter
+    "sig-012": "historical_verified", # Real Fed stress test
+    "sig-013": "analyst_estimate",    # Niche source, FX flow data is illustrative
+    "sig-014": "historical_verified", # Real 10-Q filing
+    "sig-015": "analyst_estimate",    # Press release + unproven revenue impact
+    "sig-016": "historical_verified", # Real SEC 8-K filing
+    "sig-017": "historical_verified", # Real CrowdStrike FY2025 earnings
+    "sig-018": "historical_verified", # Real July 2024 outage + 8-K
+}
+
+# ── Signal-specific contradiction fixes ────────────────────────────────
+
+# Fix sig-018: Correct description — outage was a sensor update bug, not a nation-state breach
+for signal in SIGNALS:
+    if signal.id == "sig-018":
+        signal.title = "CrowdStrike Falcon Sensor Update Causes Global Windows Outage"
+        signal.summary = "A CrowdStrike Falcon sensor content update on July 19, 2024 caused widespread Windows system crashes affecting approximately 8.5 million devices globally. The issue was identified as a defect in a Rapid Response Content update, not a security breach or cyberattack. CrowdStrike deployed a fix within hours and filed an 8-K with the SEC regarding the operational impact."
+        signal.tags = ["incident-response", "supply-chain", "outage", "remediation-costs"]
+
+    # Fix sig-008: Correct category — banking licence is regulatory/management, not pure management
+    if signal.id == "sig-008":
+        signal.category = "regulation"
+
+    # Apply evidence class
+    if signal.id in _EVIDENCE_CLASS:
+        signal.evidence_class = _EVIDENCE_CLASS[signal.id]
+
+# ── Fix specific brief contradictions ──────────────────────────────────
+
+for brief_id, brief in BRIEFS.items():
+    if brief_id == "sig-018":
+        brief.executive_summary = "The July 19, 2024 CrowdStrike Falcon sensor update caused a global IT outage affecting approximately 8.5 million Windows devices. CrowdStrike identified a defect in a Rapid Response Content configuration update — not a security breach. Estimated remediation costs of $180M include customer concessions and legal reserves. While the incident did not involve malicious actors, it exposed systemic risk in update distribution channels and raises questions about customer retention and ARR trajectory."
+        brief.what_happened = "On July 19, 2024, CrowdStrike released a Rapid Response Content update for the Falcon sensor that contained a defect causing Windows hosts to crash with a Blue Screen of Death (BSOD). The defect was in a configuration file, not in executable code or malware. CrowdStrike reverted the update within 78 minutes, but affected systems required manual remediation. Approximately 8.5 million Windows devices were impacted across enterprise, government, and critical infrastructure customers."
+        brief.why_it_matters = "The outage — despite not being a security breach — represents one of the largest IT incidents in history. It exposed concentration risk in CrowdStrike's customer base (a single vendor's update can cripple global operations), triggered customer remediation costs, and raised questions about CrowdStrike's change management and testing processes. Near-term revenue impact includes customer concessions, delayed procurement decisions, and potential churn. Longer-term, the incident may drive enterprise customers toward multi-vendor endpoint strategies."
+        brief.evidence = "CrowdStrike Preliminary Post-Incident Review (PIR) published August 6, 2024. SEC 8-K filing July 19, 2024. Customer remediation guidance and analyst estimates from Q2 FY2025 earnings call."
+
+    if brief_id == "sig-001":
+        brief.evidence = "BIS expanded export controls on advanced AI semiconductors on October 17, 2023, with subsequent updates in March 2024. Nvidia disclosed material revenue impact in its Q3 FY2024 8-K filing. The specific FY2027 revenue estimates and geographic exposure breakdown are analyst estimates, not company-disclosed figures."
+
+    if brief_id == "sig-005":
+        brief.evidence = "Apple Q1 FY2024 (December quarter) earnings release published February 1, 2024 on apple.com/newsroom. Revenue of $119.6B with Services at $23.1B. Apple Intelligence adoption survey claims referenced in this brief are analyst estimates — Apple has not disclosed official AI feature usage metrics."
+
+    if brief_id == "sig-007":
+        brief.evidence = "Wise announced market expansion and FY2024 annual results on wise.com. Revenue of £1.05B and active customer count of 8.4M are company-disclosed figures. Business segment revenue share, take-rate, and customer acquisition cost estimates are analyst-derived from partial company disclosure and industry benchmarks."
+
+    if brief_id == "sig-010":
+        brief.evidence = "Reuters reported that Adyen won a European payments processing contract with Amazon. As of the source date, neither Adyen nor Amazon had confirmed the contract in official shareholder communications. Contract value, duration, and exclusivity terms are analyst estimates based on Amazon's disclosed European payment volumes."
+

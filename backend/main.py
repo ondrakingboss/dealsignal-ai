@@ -67,6 +67,18 @@ def health():
     return HealthCheck(companies=len(COMPANIES), signals=len(SIGNALS))
 
 
+# ── Root ────────────────────────────────────────────────────────────────
+
+@app.get("/")
+def root():
+    return {
+        "status": "ok",
+        "service": "DealSignal AI",
+        "frontend": "https://frontend-theta-eight-56khhtyd5b.vercel.app",
+        "health": "/api/health",
+    }
+
+
 # ── Companies ──────────────────────────────────────────────────────────
 
 @app.get("/api/companies")
@@ -137,6 +149,18 @@ def list_signals(
     page: int = 1,
     page_size: int = 20,
 ):
+    VALID_CATEGORIES = {"revenue", "margin", "balance-sheet", "regulation", "competition", "management", "macro", "ma", "sentiment"}
+    VALID_SEVERITIES = {"low", "medium", "high"}
+
+    if category and category not in VALID_CATEGORIES:
+        raise HTTPException(status_code=400, detail=f"Invalid category: {category}. Valid: {sorted(VALID_CATEGORIES)}")
+    if severity and severity not in VALID_SEVERITIES:
+        raise HTTPException(status_code=400, detail=f"Invalid severity: {severity}. Valid: {sorted(VALID_SEVERITIES)}")
+    if page < 1:
+        raise HTTPException(status_code=400, detail="Page must be >= 1")
+    if page_size < 1 or page_size > 100:
+        raise HTTPException(status_code=400, detail="page_size must be between 1 and 100")
+
     filtered = list(SIGNALS)
     if ticker:
         filtered = [s for s in filtered if s.ticker == ticker.upper()]
