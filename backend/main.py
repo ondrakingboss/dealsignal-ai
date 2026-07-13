@@ -53,6 +53,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://frontend-theta-eight-56khhtyd5b.vercel.app",
+        "https://deal-signal-ai.vercel.app",
         "https://frontend-.+-chrisfinance\\.vercel\\.app",  # regex for preview deploys
     ],
     allow_methods=["*"],
