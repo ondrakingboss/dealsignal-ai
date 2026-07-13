@@ -169,6 +169,32 @@ export function assessThesisImpact(
   const signalText = [signal.title, signal.summary, signal.category, brief?.why_it_matters ?? ""].join(" ").toLowerCase();
   const thesisLower = thesis.toLowerCase();
 
+  // ── Threat detection (run BEFORE positive keyword matching) ────────
+  const threatKeywords = [
+    "competition", "competitive pressure", "custom chip", "in-house chip",
+    "in-house silicon", "insourcing", "procurement shift", "replacement",
+    "substitute", "pricing pressure", "margin pressure", "share loss",
+    "reduced dependency", "customer concentration", "hyperscaler alternative",
+    "demand risk", "reduce external", "procurement reduction", "displace",
+  ];
+
+  const threatScore = threatKeywords.reduce((s, kw) => s + (signalText.includes(kw) ? 1 : 0), 0);
+
+  if (threatScore >= 1 && signal.severity === "high") {
+    const matchedAssumption = relevance.matched_assumptions[0] || "";
+    return {
+      thesis_impact: "weakens",
+      thesis_impact_reason: `Competitive or customer-insourcing pressure detected. ${matchedAssumption ? `May affect tracked assumption: ${matchedAssumption}.` : "May challenge thesis assumptions about market position or growth."}`,
+    };
+  }
+
+  if (threatScore >= 1) {
+    return {
+      thesis_impact: "watch",
+      thesis_impact_reason: "Competitive or insourcing signal detected. Impact on thesis is plausible but not yet confirmed by direct financial data.",
+    };
+  }
+
   // Keywords that suggest the signal weakens the thesis
   const weakenIndicators = [
     "restrict", "restriction", "sanction", "ban", "decline", "deceleration",
