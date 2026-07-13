@@ -17,7 +17,8 @@ const navItems = [
   { href: "/", label: "Home", icon: Zap },
   { href: "/watchlist", label: "Watchlist", icon: LayoutDashboard },
   { href: "/signals", label: "Signals", icon: Radio },
-  { href: "/company/NVDA", label: "Research", icon: Search },
+  { href: "/relevance/feed", label: "Relevance", icon: Search },
+  { href: "/company/NVDA", label: "Research", icon: BarChart3 },
 ];
 
 export default function Sidebar() {
