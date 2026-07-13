@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight, Target, AlertTriangle, CheckCircle2, Eye, Sliders } from "lucide-react";
 import { loadProfile, scoreRelevance, assessThesisImpact, DEMO_PROFILE } from "@/lib/relevance-engine";
+import { apiUrl } from "@/lib/api";
 import SeverityBadge, { CategoryBadge, ConfidenceBadge } from "@/components/severity-badge";
 import type { Signal, SignalFeed, AnalystBrief } from "@/lib/types";
 
@@ -27,7 +28,7 @@ export default function RelevanceFeedPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/signals")
+    fetch(apiUrl("/api/signals"))
       .then(r => r.json())
       .then((d: SignalFeed) => {
         setSignals(d.signals);
